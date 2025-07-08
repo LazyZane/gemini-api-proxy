@@ -1,8 +1,4 @@
 {
-  "version": 2,
-  "name": "gemini-api-proxy",
-  "description": "Gemini API 代理服务 - 为中国大陆用户提供稳定的 Google Gemini API 访问",
-  "regions": ["hkg1", "sin1", "nrt1", "icn1"],
   "functions": {
     "src/app/api/**/*.ts": {
       "maxDuration": 60
@@ -23,35 +19,6 @@
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization, x-goog-api-key"
-        },
-        {
-          "key": "Access-Control-Max-Age",
-          "value": "86400"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    },
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
         }
       ]
     }
@@ -61,13 +28,5 @@
       "source": "/health",
       "destination": "/api/health"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "NEXT_TELEMETRY_DISABLED": "1"
-    }
-  }
+  ]
 }
