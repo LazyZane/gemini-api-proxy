@@ -1,103 +1,176 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-4xl mx-auto">
+          {/* 头部 */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">
+              🚀 Gemini API 代理
+            </h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+              为中国大陆用户提供稳定的 Google Gemini API 访问服务
+            </p>
+            <div className="inline-flex items-center px-4 py-2 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
+              <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+              服务正常运行
+            </div>
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* 功能特点 */}
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-3xl mb-4">⚡</div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">高速稳定</h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                基于 Vercel 全球 CDN，为中国用户优化的网络路由
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-3xl mb-4">🔒</div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">安全可靠</h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                API 密钥安全存储，支持 HTTPS 加密传输
+              </p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+              <div className="text-3xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">完全兼容</h3>
+              <p className="text-gray-600 dark:text-gray-300">
+                与原始 Gemini API 100% 兼容，无需修改现有代码
+              </p>
+            </div>
+          </div>
+
+          {/* 使用说明 */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mb-8">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">📖 使用说明</h2>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">1. 替换 API 基础 URL</h3>
+                <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">原始 URL:</p>
+                  <code className="text-red-600 dark:text-red-400 text-sm">
+                    https://generativelanguage.googleapis.com/v1beta/
+                  </code>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 mt-4">代理 URL:</p>
+                  <code className="text-green-600 dark:text-green-400 text-sm">
+                    {typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.vercel.app'}/api/v1beta/
+                  </code>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">2. 使用方式（三种方法）</h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">方法一：请求头方式（推荐，完全兼容原始 API）</h4>
+                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg overflow-x-auto">
+                      <pre className="text-sm text-gray-800 dark:text-gray-200">
+{`const response = await fetch('${typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.vercel.app'}/api/v1beta/models/gemini-2.5-flash:generateContent', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'x-goog-api-key': 'YOUR_API_KEY'  // 客户端提供密钥
+  },
+  body: JSON.stringify({
+    contents: [{ parts: [{ text: "Hello!" }] }]
+  })
+});`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">方法二：查询参数方式</h4>
+                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg overflow-x-auto">
+                      <pre className="text-sm text-gray-800 dark:text-gray-200">
+{`const response = await fetch('${typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.vercel.app'}/api/v1beta/models/gemini-2.5-flash:generateContent?key=YOUR_API_KEY', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    contents: [{ parts: [{ text: "Hello!" }] }]
+  })
+});`}
+                      </pre>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-gray-900 dark:text-white mb-2">方法三：服务端统一配置（适合内部使用）</h4>
+                    <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg overflow-x-auto">
+                      <pre className="text-sm text-gray-800 dark:text-gray-200">
+{`// 在服务端设置 GEMINI_API_KEY 环境变量
+// 客户端无需提供密钥
+const response = await fetch('${typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.vercel.app'}/api/v1beta/models/gemini-2.5-flash:generateContent', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    contents: [{ parts: [{ text: "Hello!" }] }]
+  })
+});`}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">3. cURL 示例</h3>
+                <div className="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg overflow-x-auto">
+                  <pre className="text-sm text-gray-800 dark:text-gray-200">
+{`curl "${typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.vercel.app'}/api/v1beta/models/gemini-2.5-flash:generateContent" \\
+  -H "Content-Type: application/json" \\
+  -H "x-goog-api-key: YOUR_API_KEY" \\
+  -d '{
+    "contents": [{
+      "parts": [{"text": "Hello, Gemini!"}]
+    }]
+  }'`}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 支持的端点 */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+            <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">🔗 支持的端点</h2>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">models/*:generateContent</code>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">models/*</code>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">files/*</code>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">cachedContents/*</code>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">tunedModels/*</code>
+                </div>
+                <div className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  <code className="text-sm">所有其他端点</code>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
   );
 }
