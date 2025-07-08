@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { config, validateConfig, getCorsHeaders } from '@/lib/config';
+import { config, getCorsHeaders } from '@/lib/config';
 
 /**
  * Gemini API 代理服务
@@ -123,8 +123,8 @@ async function handleRequest(request: NextRequest, { params }: { params: Promise
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       try {
         body = await request.text();
-      } catch (error) {
-        console.error('读取请求体失败:', error);
+      } catch (_error) {
+        console.error('读取请求体失败:', _error);
       }
     }
 

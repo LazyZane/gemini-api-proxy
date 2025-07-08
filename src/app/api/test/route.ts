@@ -8,7 +8,7 @@ import { config, validateConfig } from '@/lib/config';
  * 路径: /api/test
  */
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     // 验证配置
     const validation = validateConfig();

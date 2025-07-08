@@ -8,7 +8,7 @@ import { config, validateConfig } from '@/lib/config';
  * 路径: /api/health 或 /health
  */
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const startTime = Date.now();
     
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       
       geminiLatency = Date.now() - geminiStartTime;
       geminiStatus = response.ok ? 'healthy' : 'error';
-    } catch (error) {
+    } catch (_error) {
       geminiStatus = 'error';
       geminiLatency = Date.now() - startTime;
     }
@@ -104,7 +104,7 @@ export async function GET(request: NextRequest) {
 }
 
 // 支持 HEAD 请求（用于简单的存活检查）
-export async function HEAD(request: NextRequest) {
+export async function HEAD(_request: NextRequest) {
   try {
     const validation = validateConfig();
     const statusCode = validation.isValid ? 200 : 503;
@@ -116,7 +116,7 @@ export async function HEAD(request: NextRequest) {
         'Access-Control-Allow-Origin': '*',
       },
     });
-  } catch (error) {
+  } catch (_error) {
     return new NextResponse(null, {
       status: 500,
       headers: {
