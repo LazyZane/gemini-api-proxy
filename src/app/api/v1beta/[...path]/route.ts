@@ -70,7 +70,7 @@ async function handleRequest(request: NextRequest, { params }: { params: Promise
     let apiKeyInfo;
     try {
       apiKeyInfo = getApiKey(request, url);
-    } catch (error) {
+    } catch (_error) {
       return NextResponse.json(
         {
           error: 'API 密钥缺失',
