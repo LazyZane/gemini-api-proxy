@@ -2,6 +2,12 @@
 
 为中国大陆用户提供稳定、快速的 Google Gemini API 访问服务。
 
+## 🌐 在线演示
+
+**GitHub 仓库**: https://github.com/Astral719/gemini-api-proxy
+
+**一键部署到 Vercel**: [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Astral719/gemini-api-proxy)
+
 ## ✨ 特性
 
 - 🌍 **全球加速**: 基于 Vercel 全球 CDN，为中国用户优化
@@ -21,7 +27,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/gemini-api-proxy.git
+git clone https://github.com/Astral719/gemini-api-proxy.git
 cd gemini-api-proxy
 
 # 安装依赖
@@ -134,7 +140,7 @@ curl "https://your-domain.vercel.app/api/v1beta/models/gemini-2.5-flash:generate
 
 | 变量名 | 必需 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `GEMINI_API_KEY` | ✅ | - | Google Gemini API 密钥 |
+| `GEMINI_API_KEY` | ❌ | - | Google Gemini API 密钥（可选，客户端也可提供） |
 | `GEMINI_BASE_URL` | ❌ | `https://generativelanguage.googleapis.com/v1beta` | Gemini API 基础 URL |
 | `REQUEST_TIMEOUT` | ❌ | `30000` | 请求超时时间（毫秒） |
 | `ENABLE_REQUEST_LOGGING` | ❌ | `false` | 是否启用请求日志 |
