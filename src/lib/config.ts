@@ -70,7 +70,7 @@ export const config: AppConfig = {
   gemini: {
     apiKey: getEnvVar('GEMINI_API_KEY'),
     baseUrl: getEnvVar('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
-    timeout: getNumberEnvVar('REQUEST_TIMEOUT', 30000),
+    timeout: getNumberEnvVar('REQUEST_TIMEOUT', 60000),
   },
   
   app: {

@@ -128,13 +128,33 @@ async function handleRequest(request: NextRequest, { params }: { params: Promise
       }
     }
 
-    // 发送请求到 Gemini API
-    const response = await fetch(targetUrl.toString(), {
-      method: request.method,
-      headers,
-      body,
-      signal: AbortSignal.timeout(config.gemini.timeout),
-    });
+    // 发送请求到 Gemini API（带重试机制）
+    let response;
+    let lastError;
+    const maxRetries = 2;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        response = await fetch(targetUrl.toString(), {
+          method: request.method,
+          headers,
+          body,
+          signal: AbortSignal.timeout(config.gemini.timeout),
+        });
+        break; // 成功则跳出循环
+      } catch (error) {
+        lastError = error;
+        if (attempt < maxRetries) {
+          // 等待一段时间后重试
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+          console.log(`请求失败，正在重试 (${attempt + 1}/${maxRetries}):`, error);
+        }
+      }
+    }
+
+    if (!response) {
+      throw lastError || new Error('请求失败');
+    }
 
     // 获取响应数据
     const responseData = await response.text();

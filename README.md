@@ -142,7 +142,7 @@ curl "https://your-domain.vercel.app/api/v1beta/models/gemini-2.5-flash:generate
 |--------|------|--------|------|
 | `GEMINI_API_KEY` | ❌ | - | Google Gemini API 密钥（可选，客户端也可提供） |
 | `GEMINI_BASE_URL` | ❌ | `https://generativelanguage.googleapis.com/v1beta` | Gemini API 基础 URL |
-| `REQUEST_TIMEOUT` | ❌ | `30000` | 请求超时时间（毫秒） |
+| `REQUEST_TIMEOUT` | ❌ | `60000` | 请求超时时间（毫秒） |
 | `ENABLE_REQUEST_LOGGING` | ❌ | `false` | 是否启用请求日志 |
 | `ALLOWED_ORIGINS` | ❌ | `*` | 允许的来源域名（CORS） |
 
