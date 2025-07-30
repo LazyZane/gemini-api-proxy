@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { config, validateConfig } from '@/lib/config';
+import { VertexAIClient } from '@/lib/vertex-ai-client';
 
 /**
  * 健康检查端点
@@ -15,32 +16,63 @@ export async function GET(_request: NextRequest) {
     // 验证配置
     const validation = validateConfig();
     
-    // 检查 Gemini API 连接性（可选）
-    let geminiStatus = 'unknown';
-    let geminiLatency = 0;
-    
+    // 检查后端服务连接性
+    let backendStatus = 'unknown';
+    let backendLatency = 0;
+    let backendInfo = {};
+    const backendStartTime = Date.now();
+
     try {
-      const geminiStartTime = Date.now();
-      const response = await fetch(`${config.gemini.baseUrl}/models`, {
-        method: 'GET',
-        headers: {
-          'x-goog-api-key': config.gemini.apiKey,
-        },
-        signal: AbortSignal.timeout(5000), // 5秒超时
-      });
-      
-      geminiLatency = Date.now() - geminiStartTime;
-      geminiStatus = response.ok ? 'healthy' : 'error';
+
+      if (config.backend.type === 'vertex-ai' && config.backend.vertexAI) {
+        // 检查 Vertex AI 连接
+        const serviceAccountKey = JSON.parse(config.backend.vertexAI.serviceAccountKey);
+        const vertexClient = new VertexAIClient(
+          config.backend.vertexAI.projectId,
+          config.backend.vertexAI.location,
+          serviceAccountKey
+        );
+
+        // 尝试获取访问令牌来验证连接
+        await vertexClient.getAccessToken();
+        backendLatency = Date.now() - backendStartTime;
+        backendStatus = 'healthy';
+        backendInfo = {
+          type: 'vertex-ai',
+          projectId: config.backend.vertexAI.projectId,
+          location: config.backend.vertexAI.location
+        };
+      } else {
+        // 检查 Gemini API 连接
+        const response = await fetch(`${config.backend.gemini.baseUrl}/models`, {
+          method: 'GET',
+          headers: {
+            'x-goog-api-key': config.backend.gemini.apiKey,
+          },
+          signal: AbortSignal.timeout(5000), // 5秒超时
+        });
+
+        backendLatency = Date.now() - backendStartTime;
+        backendStatus = response.ok ? 'healthy' : 'error';
+        backendInfo = {
+          type: 'gemini',
+          baseUrl: config.backend.gemini.baseUrl
+        };
+      }
     } catch (_error) {
-      geminiStatus = 'error';
-      geminiLatency = Date.now() - startTime;
+      backendStatus = 'error';
+      backendLatency = Date.now() - backendStartTime;
+      backendInfo = {
+        type: config.backend.type,
+        error: _error instanceof Error ? _error.message : '未知错误'
+      };
     }
     
     const responseTime = Date.now() - startTime;
     
     // 构建健康状态响应
     const healthData = {
-      status: validation.isValid && geminiStatus !== 'error' ? 'healthy' : 'unhealthy',
+      status: validation.isValid && backendStatus !== 'error' ? 'healthy' : 'unhealthy',
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || '1.0.0',
       environment: config.app.env,
@@ -51,10 +83,10 @@ export async function GET(_request: NextRequest) {
           status: validation.isValid ? 'pass' : 'fail',
           errors: validation.errors,
         },
-        geminiApi: {
-          status: geminiStatus,
-          latency: `${geminiLatency}ms`,
-          baseUrl: config.gemini.baseUrl,
+        backend: {
+          status: backendStatus,
+          latency: `${backendLatency}ms`,
+          ...backendInfo,
         },
         memory: {
           used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
@@ -64,7 +96,7 @@ export async function GET(_request: NextRequest) {
       },
       features: {
         logging: config.app.enableLogging,
-        timeout: config.gemini.timeout,
+        timeout: config.backend.gemini.timeout,
         corsOrigins: config.cors.allowedOrigins.length,
       },
     };

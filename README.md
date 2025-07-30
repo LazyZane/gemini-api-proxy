@@ -1,6 +1,6 @@
 # 🚀 Gemini API 代理服务
 
-为中国大陆用户提供稳定、快速的 Google Gemini API 访问服务。
+为中国大陆用户提供稳定、快速的 Google Gemini API 访问服务，支持原始 Gemini API 和 Vertex AI 两种后端。
 
 ## 🌐 在线演示
 
@@ -14,14 +14,22 @@
 - 🔒 **安全可靠**: API 密钥安全存储，HTTPS 加密传输
 - 🎯 **完全兼容**: 与原始 Gemini API 100% 兼容
 - ⚡ **高性能**: 智能缓存和请求优化
+- 🔄 **双后端支持**: 支持原始 Gemini API 和 Google Cloud Vertex AI
 - 📊 **监控日志**: 可选的请求日志和错误追踪
 - 🔧 **易于部署**: 一键部署到 Vercel
 
 ## 🚀 快速开始
 
-### 1. 获取 Gemini API 密钥
+### 1. 选择后端类型并获取密钥
 
+#### 选项 A: 使用 Gemini API（推荐新手）
 访问 [Google AI Studio](https://aistudio.google.com/apikey) 获取您的 API 密钥。
+
+#### 选项 B: 使用 Vertex AI（推荐企业用户）
+1. 在 [Google Cloud Console](https://console.cloud.google.com/) 创建项目
+2. 启用 Vertex AI API
+3. 创建服务账号并下载 JSON 密钥文件
+4. 记录项目 ID 和区域（如 us-central1）
 
 ### 2. 部署到 Vercel
 
@@ -138,24 +146,49 @@ curl "https://your-domain.vercel.app/api/v1beta/models/gemini-2.5-flash:generate
 
 ### 环境变量
 
+#### 通用配置
+
 | 变量名 | 必需 | 默认值 | 说明 |
 |--------|------|--------|------|
-| `GEMINI_API_KEY` | ❌ | - | Google Gemini API 密钥（可选，客户端也可提供） |
-| `GEMINI_BASE_URL` | ❌ | `https://generativelanguage.googleapis.com/v1beta` | Gemini API 基础 URL |
+| `BACKEND_TYPE` | ❌ | `gemini` | 后端类型：`gemini` 或 `vertex-ai` |
 | `REQUEST_TIMEOUT` | ❌ | `60000` | 请求超时时间（毫秒） |
 | `ENABLE_REQUEST_LOGGING` | ❌ | `false` | 是否启用请求日志 |
 | `ALLOWED_ORIGINS` | ❌ | `*` | 允许的来源域名（CORS） |
 
+#### Gemini API 配置（当 BACKEND_TYPE=gemini 时）
+
+| 变量名 | 必需 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `GEMINI_API_KEY` | ❌ | - | Google Gemini API 密钥（可选，客户端也可提供） |
+| `GEMINI_BASE_URL` | ❌ | `https://generativelanguage.googleapis.com/v1beta` | Gemini API 基础 URL |
+
+#### Vertex AI 配置（当 BACKEND_TYPE=vertex-ai 时）
+
+| 变量名 | 必需 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `VERTEX_AI_PROJECT_ID` | ✅ | - | Google Cloud 项目 ID |
+| `VERTEX_AI_LOCATION` | ❌ | `us-central1` | Vertex AI 区域 |
+| `VERTEX_AI_SERVICE_ACCOUNT_KEY` | ✅ | - | 服务账号 JSON 密钥（字符串格式） |
+
 ## 🔗 支持的端点
 
-本代理服务支持所有 Gemini API 端点：
-
+### Gemini API 后端
+支持所有 Gemini API 端点：
 - ✅ `models/*:generateContent` - 内容生成
 - ✅ `models/*` - 模型信息
 - ✅ `files/*` - 文件管理
 - ✅ `cachedContents/*` - 缓存内容
 - ✅ `tunedModels/*` - 微调模型
 - ✅ 所有其他端点
+
+### Vertex AI 后端
+支持 Vertex AI 中的 Gemini 模型端点：
+- ✅ `models/gemini-*:generateContent` - 内容生成
+- ✅ `models/gemini-*:streamGenerateContent` - 流式内容生成
+- ✅ `models/gemini-*:countTokens` - 令牌计数
+- ✅ `models/gemini-*` - 模型信息
+- ✅ `models/text-embedding-*` - 文本嵌入
+- ❌ 文件管理和缓存内容（Vertex AI 不支持）
 
 ## 🛠️ 本地开发
 
@@ -167,13 +200,49 @@ npm install
 cp .env.example .env.local
 
 # 编辑 .env.local，填入您的配置
-# GEMINI_API_KEY=your_api_key_here
+
+# 使用 Gemini API（选项 A）
+BACKEND_TYPE=gemini
+GEMINI_API_KEY=your_api_key_here
+
+# 或使用 Vertex AI（选项 B）
+# BACKEND_TYPE=vertex-ai
+# VERTEX_AI_PROJECT_ID=your-gcp-project-id
+# VERTEX_AI_LOCATION=us-central1
+# VERTEX_AI_SERVICE_ACCOUNT_KEY={"type":"service_account","project_id":"...","private_key":"...","client_email":"..."}
 
 # 启动开发服务器
 npm run dev
 
+# 测试服务（可选）
+node test-vertex-ai.js
+
 # 访问 http://localhost:3000
 ```
+
+## 🤔 如何选择后端？
+
+### 使用 Gemini API（推荐新手）
+**优点：**
+- 设置简单，只需一个 API 密钥
+- 支持所有 Gemini API 功能
+- 适合个人项目和快速原型
+
+**缺点：**
+- 可能受到地区限制
+- 配额和计费相对简单
+
+### 使用 Vertex AI（推荐企业）
+**优点：**
+- 企业级稳定性和 SLA
+- 更好的安全性和合规性
+- 集成 Google Cloud 生态系统
+- 更灵活的计费和配额管理
+
+**缺点：**
+- 设置相对复杂
+- 需要 Google Cloud 项目
+- 不支持某些 Gemini API 功能（如文件管理）
 
 ## 📄 许可证
 

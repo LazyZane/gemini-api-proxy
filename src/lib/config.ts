@@ -7,11 +7,15 @@
 
 // 配置接口定义
 interface AppConfig {
-  // Gemini API 相关配置
-  gemini: {
-    apiKey: string;
-    baseUrl: string;
-    timeout: number;
+  // 后端配置
+  backend: {
+    type: BackendType;
+    gemini: {
+      apiKey: string;
+      baseUrl: string;
+      timeout: number;
+    };
+    vertexAI: VertexAIConfig | null;
   };
   
   // 应用相关配置
@@ -26,6 +30,20 @@ interface AppConfig {
     allowedOrigins: string[];
   };
 }
+
+/**
+ * Vertex AI 配置接口
+ */
+interface VertexAIConfig {
+  projectId: string;
+  location: string;
+  serviceAccountKey: string; // JSON 格式的服务账号密钥
+}
+
+/**
+ * 后端类型
+ */
+type BackendType = 'gemini' | 'vertex-ai';
 
 /**
  * 获取环境变量，如果不存在则返回默认值
@@ -64,13 +82,32 @@ function parseCommaSeparated(value: string): string[] {
 }
 
 /**
+ * 解析 Vertex AI 服务账号密钥
+ */
+function parseServiceAccountKey(keyString: string): Record<string, unknown> {
+  try {
+    return JSON.parse(keyString);
+  } catch {
+    throw new Error('VERTEX_AI_SERVICE_ACCOUNT_KEY 格式不正确，应为有效的 JSON 字符串');
+  }
+}
+
+/**
  * 应用配置对象
  */
 export const config: AppConfig = {
-  gemini: {
-    apiKey: getEnvVar('GEMINI_API_KEY'),
-    baseUrl: getEnvVar('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
-    timeout: getNumberEnvVar('REQUEST_TIMEOUT', 60000),
+  backend: {
+    type: (getEnvVar('BACKEND_TYPE', 'gemini') as BackendType),
+    gemini: {
+      apiKey: getEnvVar('GEMINI_API_KEY'),
+      baseUrl: getEnvVar('GEMINI_BASE_URL', 'https://generativelanguage.googleapis.com/v1beta'),
+      timeout: getNumberEnvVar('REQUEST_TIMEOUT', 60000),
+    },
+    vertexAI: getEnvVar('VERTEX_AI_PROJECT_ID') ? {
+      projectId: getEnvVar('VERTEX_AI_PROJECT_ID'),
+      location: getEnvVar('VERTEX_AI_LOCATION', 'us-central1'),
+      serviceAccountKey: getEnvVar('VERTEX_AI_SERVICE_ACCOUNT_KEY'),
+    } : null,
   },
   
   app: {
@@ -85,32 +122,39 @@ export const config: AppConfig = {
 };
 
 /**
- * 验证配置（现在 API 密钥是可选的，因为支持客户端提供）
+ * 更新配置验证
  */
 export function validateConfig(): { isValid: boolean; errors: string[]; warnings: string[] } {
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // API 密钥现在是可选的（客户端可以提供）
-  if (!config.gemini.apiKey) {
-    warnings.push('GEMINI_API_KEY 环境变量未设置 - 将依赖客户端提供 API 密钥');
-  } else {
-    // 验证 API 密钥格式（Gemini API 密钥通常以 'AI' 开头）
-    if (!config.gemini.apiKey.startsWith('AI')) {
-      warnings.push('GEMINI_API_KEY 格式可能不正确（通常以 "AI" 开头）');
+  // 验证后端类型
+  if (!['gemini', 'vertex-ai'].includes(config.backend.type)) {
+    errors.push('BACKEND_TYPE 必须是 "gemini" 或 "vertex-ai"');
+  }
+
+  // 根据后端类型验证相应配置
+  if (config.backend.type === 'gemini') {
+    if (!config.backend.gemini.apiKey) {
+      warnings.push('GEMINI_API_KEY 环境变量未设置 - 将依赖客户端提供 API 密钥');
     }
-  }
-
-  // 验证超时时间
-  if (config.gemini.timeout < 1000) {
-    errors.push('REQUEST_TIMEOUT 应至少为 1000 毫秒');
-  }
-
-  // 验证基础 URL
-  try {
-    new URL(config.gemini.baseUrl);
-  } catch {
-    errors.push('GEMINI_BASE_URL 格式不正确');
+  } else if (config.backend.type === 'vertex-ai') {
+    if (!config.backend.vertexAI) {
+      errors.push('使用 Vertex AI 后端时，必须设置 VERTEX_AI_PROJECT_ID');
+    } else {
+      if (!config.backend.vertexAI.projectId) {
+        errors.push('VERTEX_AI_PROJECT_ID 不能为空');
+      }
+      if (!config.backend.vertexAI.serviceAccountKey) {
+        errors.push('VERTEX_AI_SERVICE_ACCOUNT_KEY 不能为空');
+      } else {
+        try {
+          parseServiceAccountKey(config.backend.vertexAI.serviceAccountKey);
+        } catch (error) {
+          errors.push(`服务账号密钥格式错误: ${error instanceof Error ? error.message : '未知错误'}`);
+        }
+      }
+    }
   }
 
   return {
@@ -173,3 +217,5 @@ if (config.app.env === 'development') {
     console.log('✅ 配置基本正常（有警告）');
   }
 }
+
+
